@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordlist Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Define Colors */
+        :root {
+            --bg-color: #1c1c1c; /* Background Color */
+            --primary-color: #F3C623; /* Primary Color */
+            --text-color: #cccccc; /* Text Color */
+            --hover-color: #D1A900; /* Hover color for buttons */
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif; /* Apply Montserrat font */
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--bg-color);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: slideIn 1s ease-out;
+        }
+
+        h1 {
+            color: var(--text-color); /* Set header text color to #cccccc */
+            font-size: 30px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: 600; /* Bold text */
+            animation: fadeIn 1s ease-out;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 20px;
+            border: 2px solid var(--text-color); /* Set border to #cccccc */
+            border-radius: 10px;
+            background-color: #333333;
+            color: var(--text-color);
+            font-size: 16px;
+            margin-bottom: 20px;
+            resize: none;
+            box-shadow: 0 4px 8px rgba(204, 204, 204, 0.4); /* Shadow color set to #cccccc */
+            transition: all 0.3s ease;
+            text-align: left; /* Left-align text inside the textarea */
+        }
+
+        textarea:focus {
+            border-color: var(--text-color); /* Focus border set to #cccccc */
+            outline: none;
+            box-shadow: 0 0 10px rgba(204, 204, 204, 0.6); /* Focus shadow color set to #cccccc */
+        }
+
+        button {
+            background-color: var(--text-color); /* Set button background to #cccccc */
+            color: #1c1c1c; /* Button text color */
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            display: inline-block;
+            box-shadow: 0 4px 10px rgba(204, 204, 204, 0.3); /* Shadow for button set to #cccccc */
+        }
+
+        button:hover {
+            background-color: var(--hover-color); /* Change to hover color */
+            box-shadow: 0 6px 15px rgba(204, 204, 204, 0.5); /* Hover shadow color set to #cccccc */
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Wordlist Generator</h1>
+        <textarea id="textInput" placeholder="Enter words separated by spaces..."></textarea>
+        <button onclick="generateWordlist()">Generate Wordlist</button>
+    </div>
+
+    <script>
+        function generateCombinations(words) {
+            const results = [];
+
+            // Recursive function to generate combinations
+            function combine(prefix, words) {
+                for (let i = 0; i < words.length; i++) {
+                    const newCombo = prefix + words[i];
+                    results.push(newCombo); // Save current combination
+                    combine(newCombo, words.slice(0, i).concat(words.slice(i + 1))); // Recursive step
+                }
+            }
+
+            combine("", words); // Start with an empty prefix
+            return results;
+        }
+
+        function generateWordlist() {
+            const input = document.getElementById('textInput').value.trim();
+            const words = input.split(/\s+/).filter(Boolean); // Split by spaces, remove empty entries
+
+            if (!words.length) {
+                alert("Please enter at least one word!");
+                return;
+            }
+
+            const combinations = generateCombinations(words);
+            const uniqueCombinations = [...new Set(combinations)]; // Remove duplicates
+            const wordlist = uniqueCombinations.join('\n'); // Combine into one string
+
+            // Create download link
+            const blob = new Blob([wordlist], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = 'wordlist.txt';
+            downloadLink.click(); // Trigger the download automatically
+        }
+    </script>
+</body>
+</html>
